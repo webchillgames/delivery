@@ -1,0 +1,94 @@
+@mixin paragraph {
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 40px;
+    padding: 0;
+    margin-bottom: 70px;
+}
+
+@mixin sectionTitle {
+    text-transform: uppercase;
+    letter-spacing: 2.4px;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 40px;
+    color: $main;
+    margin-bottom: 40px;
+}
+
+@mixin sectionSubtitle {
+    color: #402b2b;
+    font-size: 48px;
+    font-weight: 400;
+    line-height: 140%;
+    font-family: "Times New Roman", Times, serif;
+    margin: 0;
+}
+
+@mixin paragraphImg {
+    width: 500px;
+    margin: 0 auto;
+
+    @media (max-width: 1200px) {
+        width: 400px;
+    }
+
+    @media (max-width: 900px) {
+        width: 300px;
+    }
+}
+
+@mixin paragraphBlock {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 60px;
+
+    @media (max-width: 800px) {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(2, max-content);
+        grid-gap: 16px;
+    }
+}
+
+@mixin resetListStyles {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+@mixin resetButtonStyles {
+    border: none;
+}
+
+@mixin coloredButton {
+    @include resetButtonStyles;
+
+    background-color: $main;
+    color: #fff;
+    padding: 20px 25px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+
+    img {
+        margin-left: 24px;
+    }
+
+    @media (max-width: 1000px) {
+        padding: 10px 15px;
+
+        img {
+            margin-left: 10px;
+        }
+    }
+}
+
+@mixin iconButton {
+    @include resetButtonStyles;
+    background-color: transparent;
+    padding: 8px;
+}
