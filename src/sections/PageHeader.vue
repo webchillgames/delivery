@@ -238,7 +238,7 @@ export default defineComponent({
       }
     }
 
-    &__wrapper {
+    &__wrapper.wrapper {
       padding-left: 16px;
       padding-right: 16px;
     }
