@@ -13,16 +13,7 @@
         <img src="@/assets/faq.png" width="707" alt="вопросы" />
       </div>
 
-      <ul class="faq__list" ref="listRef">
-        <!-- <QAItem
-          v-for="q in faqList"
-          :key="q"
-          :item="q"
-          :isOpened="openedItem === q.id"
-          @changeOpenedItem="changeOpenedItem"
-        /> -->
-        <!-- <li class="faq__load">Load more</li> -->
-      </ul>
+      <ul class="faq__list" ref="listRef" @click="changeOpenedItem"></ul>
     </div>
   </div>
 </template>
@@ -35,7 +26,7 @@ const list = [
   {
     id: 1,
     question: `What is a professional traffic permit?`,
-    answer: `Traffic permits are a requirement for conducting professional traffic.`,
+    answer: `Traffic permits are a requirement for conducting professional traffic. Traffic permits are a requirement for conducting professional traffic. Traffic permits are a requirement for conducting professional traffic`,
   },
   {
     id: 2,
@@ -79,29 +70,35 @@ const list = [
   },
 ];
 
-const ITEM_HEIGHT = 90
+const ITEM_HEIGHT = 90;
+const ITEM_MARGIN = 45;
 
 export default {
   setup() {
-    const openedItem = ref(null);
     const listRef = ref();
 
-    function changeOpenedItem(id) {
-      console.log(id);
-      if (openedItem.value === id) {
-        openedItem.value = null;
-      } else {
-        openedItem.value = id;
+    function changeOpenedItem(e) {
+      // const list = e.target.closest("ul");
+      const item = e.target.closest("li");
+      const answer = item.children.item(1);
+
+      if (!item) return;
+
+      const prevOpenedItem = document.querySelector("li.open");
+
+      if (prevOpenedItem) {
+        prevOpenedItem.classList.remove("open");
       }
+
+      item.classList.add("open");
+
+      placeListOnPage(answer.clientHeight, item.getAttribute("id"));
     }
 
     function createFaqList() {
       if (!listRef.value) {
         return;
       }
-      const halfOfItems = Math.ceil(list.length / 2);
-
-      listRef.value.style.height = halfOfItems * 90 + "px";
 
       list.forEach((el, i) => {
         const liEl = document.createElement("li");
@@ -112,33 +109,85 @@ export default {
         const insideQuestion = document.createElement("span");
         const insideAnswer = document.createElement("span");
 
+        liEl.setAttribute("id", i);
+
         insideQuestion.textContent = el.question;
         insideAnswer.textContent = el.answer;
 
-        liEl.style.width = "40%";
+        questionEl.style.height = ITEM_HEIGHT + "px";
 
-        if (i < halfOfItems) {
-          liEl.style.left = 0;
-          liEl.style.top = 90 * i + "px";
-        } else {
-          console.log(Math.round(i - halfOfItems));
-          liEl.style.top = 90 * (i - halfOfItems) + "px";
-          liEl.style.left = "50%";
-        }
+        liEl.style.width = "40%";
 
         answerEl.appendChild(insideAnswer);
         questionEl.appendChild(insideQuestion);
 
         liEl.appendChild(questionEl);
         liEl.appendChild(answerEl);
-
         listRef.value.appendChild(liEl);
       });
     }
 
-    onMounted(createFaqList);
+    function placeListOnPage(answerHeight, openedItemId) {
+      const items = listRef.value.children;
 
-    return { listRef, openedItem, changeOpenedItem };
+      const halfOfItems = Math.ceil(items.length / 2);
+
+      listRef.value.style.height =
+        halfOfItems * ITEM_HEIGHT + ITEM_MARGIN * (halfOfItems - 1) + "px";
+
+      if (answerHeight) {
+        listRef.value.style.height =
+          (halfOfItems - 1) * ITEM_HEIGHT +
+          ITEM_MARGIN * (halfOfItems - 1) +
+          answerHeight +
+          ITEM_HEIGHT +
+          "px";
+      }
+
+      for (let item of items) {
+        const i = item.id;
+
+        if (i < halfOfItems) {
+          item.style.left = 0;
+          item.style.top = ITEM_HEIGHT * i + "px";
+
+          if (i > 0) {
+            item.style.top = ITEM_HEIGHT * i + ITEM_MARGIN * i + "px";
+
+            //openedItemId < i: открытый находится над текущим
+            if (openedItemId && openedItemId < i) {
+              item.style.top =
+                ITEM_HEIGHT * i + answerHeight + ITEM_MARGIN * i + "px";
+            }
+          }
+        } else {
+          const itemIdxOfSecondColumn = i - halfOfItems;
+          item.style.left = "50%";
+
+          item.style.top = ITEM_HEIGHT * itemIdxOfSecondColumn + "px";
+
+          if (itemIdxOfSecondColumn > 0) {
+            item.style.top =
+              ITEM_HEIGHT * itemIdxOfSecondColumn +
+              ITEM_MARGIN * itemIdxOfSecondColumn +
+              "px";
+
+            if (openedItemId && openedItemId < i) {
+              item.style.top =
+                ITEM_HEIGHT * itemIdxOfSecondColumn + answerHeight;
+              ITEM_MARGIN * itemIdxOfSecondColumn + "px";
+            }
+          }
+        }
+      }
+    }
+
+    onMounted(() => {
+      createFaqList();
+      placeListOnPage();
+    });
+
+    return { listRef, changeOpenedItem };
   },
 
   components: { QAItem },
@@ -197,7 +246,6 @@ export default {
   }
 
   ul {
-    border: 1px solid red;
     @include resetListStyles;
     position: relative;
 
@@ -218,7 +266,6 @@ export default {
     }
 
     h3 {
-      height: 90px;
       font-size: 18px;
       font-weight: 500;
       line-height: 30px;
@@ -231,12 +278,16 @@ export default {
       border-bottom-left-radius: 10px;
       border-bottom-right-radius: 10px;
       position: relative;
+      margin: 0;
+      position: absolute;
+      transform: translateY(-100%);
+      opacity: 0;
+      box-shadow: 0px 20px 40px 0px rgba(238, 77, 71, 0.1);
+    }
 
-      span {
-        position: absolute;
-        transform: translateY(-100%);
-        // opacity: 0;
-      }
+    li.open p {
+      transform: translateY(0);
+      opacity: 1;
     }
 
     button {
