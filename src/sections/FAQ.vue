@@ -19,66 +19,68 @@
 </template>
 
 <script>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import QAItem from "../elements/QAItem.vue";
 
 const list = [
   {
-    id: 1,
-    question: `What is a professional traffic permit?`,
+    id: 0,
+    question: `What is a professional traffic permit? What is a professional traffic permit?`,
     answer: `Traffic permits are a requirement for conducting professional traffic. Traffic permits are a requirement for conducting professional traffic. Traffic permits are a requirement for conducting professional traffic`,
   },
   {
-    id: 2,
+    id: 1,
     question: `How to check the traffic condition?`,
     answer: `Traffic permits are a requirement for conducting professional traffic.`,
   },
   {
-    id: 3,
+    id: 2,
     question: `What are the requirements for a professional traffic permit?`,
     answer: `Traffic permits are a requirement for conducting professional traffic.`,
   },
   {
-    id: 4,
+    id: 3,
     question: `Are there professional traffic permit training courses at a distance?`,
     answer: `Traffic permits are a requirement for conducting professional traffic.`,
   },
   {
-    id: 5,
+    id: 4,
     question: `When is a professional traffic permit needed?`,
     answer: `Traffic permits are a requirement for conducting professional traffic.`,
   },
   {
-    id: 6,
+    id: 5,
     question: `Where to look for a traffic permit?`,
     answer: `Traffic permits are a requirement for conducting professional traffic.`,
   },
   {
-    id: 7,
+    id: 6,
     question: `Are there differences between a traffic permit and a professional traffic permit?`,
     answer: `Traffic permits are a requirement for conducting professional traffic.`,
   },
   {
-    id: 8,
+    id: 7,
     question: `How to plug in for the traffic permit test?`,
     answer: `Traffic permits are a requirement for conducting professional traffic.`,
   },
   {
-    id: 9,
+    id: 8,
     question: `How is the sample for a professional traffic permit booked?`,
     answer: `Traffic permits are a requirement for conducting professional traffic.`,
   },
 ];
 
-const ITEM_HEIGHT = 90;
+const ITEM_WIDTH = 48;
 const ITEM_MARGIN = 45;
 
 export default {
   setup() {
+    const maxHeight = ref(0);
+
+    const itemHeight = computed(() => maxHeight.value + 30);
     const listRef = ref();
 
     function changeOpenedItem(e) {
-      // const list = e.target.closest("ul");
       const item = e.target.closest("li");
       const answer = item.children.item(1);
 
@@ -92,7 +94,7 @@ export default {
 
       item.classList.add("open");
 
-      placeListOnPage(answer.clientHeight, item.getAttribute("id"));
+      placeListOnPage(answer.clientHeight, Number(item.getAttribute("id")));
     }
 
     function createFaqList() {
@@ -114,10 +116,6 @@ export default {
         insideQuestion.textContent = el.question;
         insideAnswer.textContent = el.answer;
 
-        questionEl.style.height = ITEM_HEIGHT + "px";
-
-        liEl.style.width = "40%";
-
         answerEl.appendChild(insideAnswer);
         questionEl.appendChild(insideQuestion);
 
@@ -129,55 +127,75 @@ export default {
 
     function placeListOnPage(answerHeight, openedItemId) {
       const items = listRef.value.children;
-
       const halfOfItems = Math.ceil(items.length / 2);
 
-      listRef.value.style.height =
-        halfOfItems * ITEM_HEIGHT + ITEM_MARGIN * (halfOfItems - 1) + "px";
+      for (let item of items) {
+        const itemId = Number(item.id);
+        let currentIdx;
+        item.style.width = ITEM_WIDTH + "%";
 
-      if (answerHeight) {
-        listRef.value.style.height =
-          (halfOfItems - 1) * ITEM_HEIGHT +
-          ITEM_MARGIN * (halfOfItems - 1) +
-          answerHeight +
-          ITEM_HEIGHT +
-          "px";
+        if (itemId < halfOfItems) {
+          item.style.left = 0;
+          currentIdx = itemId;
+        } else {
+          item.style.left = "52%";
+          currentIdx = itemId - halfOfItems;
+        }
+
+        const title = item.children.item(0);
+        const text = item.children.item(0).children.item(0);
+
+        if (maxHeight.value < text.getBoundingClientRect().height) {
+          maxHeight.value = text.getBoundingClientRect().height;
+        }
+
+        title.style.height = itemHeight.value + "px";
+
+        item.style.top = itemHeight.value * currentIdx + "px";
+
+        if (currentIdx > 0) {
+          item.style.top =
+            itemHeight.value * currentIdx + ITEM_MARGIN * currentIdx + "px";
+        }
+
+        if (openedItemId !== undefined && itemId > openedItemId) {
+          const isItemFrom1Column = itemId < halfOfItems;
+          const isItemFrom2Column = itemId >= halfOfItems;
+
+          const isOpenedItemFrom1Column = openedItemId < halfOfItems;
+          const isOpenedItemFrom2Column = openedItemId >= halfOfItems;
+
+          if (isOpenedItemFrom1Column && isItemFrom1Column) {
+            item.style.top =
+              itemHeight.value * itemId +
+              answerHeight +
+              ITEM_MARGIN * itemId +
+              "px";
+          }
+
+          if (isOpenedItemFrom2Column && isItemFrom2Column) {
+            item.style.top =
+              itemHeight.value * currentIdx +
+              answerHeight +
+              ITEM_MARGIN * currentIdx +
+              "px";
+          }
+        }
       }
 
-      for (let item of items) {
-        const i = item.id;
+      if (maxHeight.value > 0) {
+        listRef.value.style.height =
+          halfOfItems * itemHeight.value +
+          ITEM_MARGIN * (halfOfItems - 1) +
+          "px";
 
-        if (i < halfOfItems) {
-          item.style.left = 0;
-          item.style.top = ITEM_HEIGHT * i + "px";
-
-          if (i > 0) {
-            item.style.top = ITEM_HEIGHT * i + ITEM_MARGIN * i + "px";
-
-            //openedItemId < i: открытый находится над текущим
-            if (openedItemId && openedItemId < i) {
-              item.style.top =
-                ITEM_HEIGHT * i + answerHeight + ITEM_MARGIN * i + "px";
-            }
-          }
-        } else {
-          const itemIdxOfSecondColumn = i - halfOfItems;
-          item.style.left = "50%";
-
-          item.style.top = ITEM_HEIGHT * itemIdxOfSecondColumn + "px";
-
-          if (itemIdxOfSecondColumn > 0) {
-            item.style.top =
-              ITEM_HEIGHT * itemIdxOfSecondColumn +
-              ITEM_MARGIN * itemIdxOfSecondColumn +
-              "px";
-
-            if (openedItemId && openedItemId < i) {
-              item.style.top =
-                ITEM_HEIGHT * itemIdxOfSecondColumn + answerHeight;
-              ITEM_MARGIN * itemIdxOfSecondColumn + "px";
-            }
-          }
+        if (answerHeight) {
+          listRef.value.style.height =
+            (halfOfItems - 1) * itemHeight.value +
+            ITEM_MARGIN * (halfOfItems - 1) +
+            answerHeight +
+            itemHeight.value +
+            "px";
         }
       }
     }
@@ -185,6 +203,12 @@ export default {
     onMounted(() => {
       createFaqList();
       placeListOnPage();
+
+      window.addEventListener("resize", placeListOnPage);
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener("resize", placeListOnPage);
     });
 
     return { listRef, changeOpenedItem };
@@ -209,7 +233,7 @@ export default {
     top: 0;
     right: 0;
     z-index: -1;
-    border-top-left-radius: 10%;
+    border-top-left-radius: 80px;
   }
 
   h2 {
@@ -258,7 +282,7 @@ export default {
 
     h3,
     p {
-      padding: 16px;
+      padding: 8px;
       box-sizing: border-box;
       display: flex;
       justify-content: space-between;
@@ -292,6 +316,44 @@ export default {
 
     button {
       @include iconButton;
+    }
+  }
+
+  @media (max-width: $desktop) {
+  }
+
+  @media (max-width: $middle-desktop) {
+    img {
+      width: 500px;
+    }
+  }
+
+  @media (max-width: $tablet) {
+    ul {
+      h3 {
+        font-size: 16px;
+      }
+    }
+
+    img {
+      width: 400px;
+    }
+  }
+
+  @media (max-width: $small-tablet) {
+    padding-top: 40px;
+
+    &::after {
+      border-top-left-radius: 40px;
+    }
+
+    &__top {
+      display: block;
+      text-align: center;
+    }
+
+    img {
+      display: none;
     }
   }
 }

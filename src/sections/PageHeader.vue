@@ -164,7 +164,7 @@ export default defineComponent({
     align-items: center;
   }
 
-  @media (max-width: 1599px) {
+  @media (max-width: $desktop) {
     &__content {
       p {
         font-size: 70px;
@@ -178,7 +178,7 @@ export default defineComponent({
     }
   }
 
-  @media (max-width: 1200px) {
+  @media (max-width: $middle-desktop) {
     height: 714px;
 
     &__car {
@@ -202,7 +202,7 @@ export default defineComponent({
     }
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: $tablet) {
     height: 535px;
 
     &__car {
@@ -221,7 +221,7 @@ export default defineComponent({
     }
   }
 
-  @media (max-width: 800px) {
+  @media (max-width: $small-tablet) {
     margin-bottom: 50px;
     height: auto;
     padding-bottom: 30px;
@@ -287,7 +287,7 @@ export default defineComponent({
     }
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: $phone) {
     &__logo-mobile {
       display: block;
     }

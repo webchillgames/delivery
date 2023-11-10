@@ -25,7 +25,7 @@ export default {
 <style lang="scss">
 .how-to {
   @include paragraphBlock;
-  
+
   p {
     @include paragraph;
   }

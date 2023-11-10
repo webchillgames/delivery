@@ -23,17 +23,25 @@
     line-height: 140%;
     font-family: "Times New Roman", Times, serif;
     margin: 0;
+
+    @media (max-width: $middle-desktop) {
+        font-size: 38px;
+    }
+
+    @media (max-width: $tablet) {
+        font-size: 28px;
+    }
 }
 
 @mixin paragraphImg {
     width: 500px;
     margin: 0 auto;
 
-    @media (max-width: 1200px) {
+    @media (max-width: $middle-desktop) {
         width: 400px;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: $tablet) {
         width: 300px;
     }
 }
@@ -43,7 +51,7 @@
     grid-template-columns: 1fr 1fr;
     grid-gap: 60px;
 
-    @media (max-width: 800px) {
+    @media (max-width: $small-tablet) {
         grid-template-columns: 1fr;
         grid-template-rows: repeat(2, max-content);
         grid-gap: 16px;

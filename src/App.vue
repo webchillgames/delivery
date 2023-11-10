@@ -5,7 +5,7 @@
 
     <main>
       <AboutUs class="main__section" />
-      <HowTo class="main__section" />
+      <HowToApply class="main__section" />
       <FAQ class="main__section" />
       <ClientsReviews class="main__section" />
     </main>
@@ -17,14 +17,14 @@
 import AboutUs from "./sections/AboutUs.vue";
 import ClientsReviews from "./sections/ClientsReviews.vue";
 import FAQ from "./sections/FAQ.vue";
-import HowTo from "./sections/HowTo.vue";
+import HowToApply from "./sections/HowToApply.vue";
 import PageHeader from "./sections/PageHeader.vue";
 
 export default {
   setup() {
     return {};
   },
-  components: { PageHeader, AboutUs, HowTo, FAQ, ClientsReviews },
+  components: { PageHeader, AboutUs, FAQ, ClientsReviews, HowToApply },
 };
 </script>
 
@@ -35,6 +35,14 @@ export default {
   &__section {
     & + & {
       margin-top: 100px;
+    }
+  }
+
+  @media (max-width: $small-tablet) {
+    &__section {
+      & + & {
+        margin-top: 40px;
+      }
     }
   }
 }

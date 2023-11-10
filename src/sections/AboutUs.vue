@@ -57,7 +57,7 @@ export default {
     @include paragraphImg;
   }
 
-  @media (max-width: 800px) {
+  @media (max-width: $small-tablet) {
 
 
     &__text {
